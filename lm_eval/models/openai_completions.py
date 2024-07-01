@@ -448,6 +448,13 @@ class OpenaiChatCompletionsLM(LM):
                     **kwargs,
                 )
 
+                # Account for empty return on content filter being triggered
+                try:
+                    response.choices
+                except AttributeError:
+                    # Skip to next response
+                    continue
+
                 for resp, (context, args_) in zip(response.choices, chunk):
                     s = resp.message.content
 
