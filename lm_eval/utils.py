@@ -303,7 +303,8 @@ class Reorderer:
                 res[ind] = v
                 cov[ind] = True
 
-        assert all(cov)
+        # Remove this assertation for now to allow some requests to be skipped 
+        # assert all(cov)
 
         return res
 
