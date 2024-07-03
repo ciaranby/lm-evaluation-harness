@@ -6,6 +6,8 @@ from typing import List, Literal, Optional, Tuple
 
 from tqdm import tqdm
 
+import uuid
+import datetime
 import lm_eval.models.utils
 from lm_eval import utils
 from lm_eval.api.model import LM, TemplateLM
@@ -52,6 +54,8 @@ def oa_completion(client, chat: bool = False, **kwargs):
         )
     else:
         import openai
+        from openai.types.chat.chat_completion import ChatCompletion
+        from openai.types.completion import Completion
 
     def _exception_callback(e: Exception, sleep_time: float) -> None:
         import traceback
@@ -69,7 +73,16 @@ def oa_completion(client, chat: bool = False, **kwargs):
         else:
             return client.completions.create(**kwargs)
 
-    return completion()
+    completion = completion()
+
+    #TODO: Might need to add in a choice with an empty string.
+    if completion is None and chat:
+        completion = ChatCompletion(id=str(uuid.uuid4()), created=datetime.time(), model=kwargs['model'], object="chat.completion", choices=[])
+    elif completion is None and not chat:
+        completion = Completion(id=str(uuid.uuid4()), created=datetime.time(), model=kwargs['model'], object="text_completion", choices=[])
+
+    return completion
+
 
 
 @register_model("openai-completions", "local-completions")
@@ -447,13 +460,6 @@ class OpenaiChatCompletionsLM(LM):
                     model=self.model,
                     **kwargs,
                 )
-
-                # Account for empty return on content filter being triggered
-                try:
-                    response.choices
-                except AttributeError:
-                    # Skip to next response
-                    continue
 
                 for resp, (context, args_) in zip(response.choices, chunk):
                     s = resp.message.content
