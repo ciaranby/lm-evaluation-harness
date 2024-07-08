@@ -77,9 +77,9 @@ def oa_completion(client, chat: bool = False, **kwargs):
 
     #TODO: Might need to add in a choice with an empty string.
     if completion is None and chat:
-        completion = ChatCompletion(id=str(uuid.uuid4()), created=datetime.time(), model=kwargs['model'], object="chat.completion", choices=[])
+        completion = ChatCompletion(id=str(uuid.uuid4()), created=datetime.time(), model=kwargs['model'], object="chat.completion", choices=[""])
     elif completion is None and not chat:
-        completion = Completion(id=str(uuid.uuid4()), created=datetime.time(), model=kwargs['model'], object="text_completion", choices=[])
+        completion = Completion(id=str(uuid.uuid4()), created=datetime.time(), model=kwargs['model'], object="text_completion", choices=[""])
 
     return completion
 
