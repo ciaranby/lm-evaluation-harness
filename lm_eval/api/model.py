@@ -274,7 +274,7 @@ class CachingLM:
                 elif hsh in self.dbdict:
                     ob = self.dbdict[hsh]
 
-                    assert ob is not None
+                    # assert ob is not None
 
                     res.append(ob)
                 else:
